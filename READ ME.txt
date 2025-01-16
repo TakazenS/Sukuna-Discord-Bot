@@ -1,0 +1,1 @@
+You have to open the TOKEN.py file and add your discord bot token instead of "YOUR TOKEN GOES HERE" !

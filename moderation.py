@@ -86,40 +86,108 @@ class Moderation(commands.Cog):
     
     @commands.hybrid_command(name = "unban", description = "Débannit un membre du serveur")
     async def unban(self, ctx : commands.Context, member : str) -> None:
-            try:
-                await ctx.defer(ephemeral = True)
+        try:
+            await ctx.defer(ephemeral = True)
 
-                is_private = ctx.guild is None and isinstance(ctx.author, discord.User)
-                if is_private:
-                    return await ctx.send("Tu ne peux pas utiliser cette commande en mp !")
+            is_private = ctx.guild is None and isinstance(ctx.author, discord.User)
+            if is_private:
+                return await ctx.send("Tu ne peux pas utiliser cette commande en mp !")
 
-                has_permission = ctx.author.guild_permissions.ban_members
-                user_mention = ctx.author.mention
-                if not has_permission:
-                    return await ctx.reply(f"{user_mention} -> Tu n'as pas les permissions pour unban un membre !", ephemeral = True)
+            has_permission = ctx.author.guild_permissions.ban_members
+            user_mention = ctx.author.mention
+            if not has_permission:
+                return await ctx.reply(f"{user_mention} -> Tu n'as pas les permissions pour unban un membre !", ephemeral = True)
 
-                banned_users = [ban_entry async for ban_entry in ctx.guild.bans()]
-                member_name = member
+            banned_users = [ban_entry async for ban_entry in ctx.guild.bans()]
+            member_name = member
+            for ban_entry in banned_users:
+                user = ban_entry.user
 
-                for ban_entry in banned_users:
-                    user = ban_entry.user
+            is_prefix = ctx.message.content.startswith("!")
+            if is_prefix and user.name == member_name:
+                await ctx.guild.unban(user)
+                print(f"{logsDate()} {ctx.author.name} a débanni {member_name} ! Type : [PREFIX]")
+                return await ctx.reply(f"{user_mention} a débanni {member_name} !", ephemeral = True)
 
-                is_prefix = ctx.message.content.startswith("!")
-                if is_prefix and user.name == member_name:
-                    await ctx.guild.unban(user)
-                    print(f"{logsDate()} {ctx.author.name} a débanni {member_name} ! Type : [PREFIX]")
-                    return await ctx.reply(f"{user_mention} a débanni {member_name} !", ephemeral = True)
+            if user.name == member_name:
+                await ctx.guild.unban(user)
+                print(f"{logsDate()} {ctx.author.name} a débanni {member_name} ! Type : [SLASHCOMMAND]")
+                return await ctx.reply(f"{user_mention} a débanni {member_name} !", ephemeral = True)
 
-                if user.name == member_name:
-                    await ctx.guild.unban(user)
-                    print(f"{logsDate()} {ctx.author.name} a débanni {member_name} ! Type : [SLASHCOMMAND]")
-                    return await ctx.reply(f"{user_mention} a débanni {member_name} !", ephemeral = True)
+            return await ctx.reply(f"{user_mention} -> Utilisateur introuvable !", ephemeral = True)
+        except discord.Forbidden as error:
+            print(f"{errorDate()} Le bot n'a pas les permission pour débannir un membre ! Erreur : {error}")
+        except discord.HTTPException as error:
+            print(f"{errorDate()} Une erreur HTTP s'est produite ! Erreur : {error}")
+        except Exception as error:
+            print(f"{errorDate()} Une erreur inattendue s'est produite ! Erreur : {error}")
 
-                return await ctx.reply(f"{user_mention} -> Utilisateur introuvable !", ephemeral = True)
-            except discord.Forbidden as error:
-                print(f"{errorDate()} Le bot n'a pas les permission pour débannir un membre ! Erreur : {error}")
-            except discord.HTTPException as error:
-                print(f"{errorDate()} Une erreur HTTP s'est produite ! Erreur : {error}")
-            except Exception as error:
-                print(f"{errorDate()} Une erreur inattendue s'est produite ! Erreur : {error}")
-    
+            
+    @commands.hybrid_command(name = "add", description = "Ajoute un rôle à un membre ")
+    async def addrole(self, ctx : commands.Context, role : discord.Role, member : discord.Member) -> None:
+        try:
+            await ctx.defer(ephemeral = True)
+
+            is_private = ctx.guild is None and isinstance(ctx.author, discord.User)
+            if is_private:
+                return await ctx.send("Tu ne peux pas utiliser cette commande en mp !")
+            
+            has_permission = ctx.author.guild_permissions.administrator
+            user_mention = ctx.author.mention
+            if not has_permission:
+                return await ctx.reply(f"{user_mention} -> Tu n'as pas les permissions gérer les rôles !", ephemeral = True)
+
+            is_allowed_to_manage = ctx.author.top_role >= member.top_role
+            if not is_allowed_to_manage:
+                return await ctx.reply(f"{user_mention} -> Tu n'as pas les permissions pour gérer les rôles de cet utilisateur !", ephemeral = True)
+            
+            is_prefix = ctx.message.content.startswith("!")
+            if is_prefix:
+                await member.add_roles(role)
+                print(f"{logsDate()} {ctx.author.name} a ajouté le rôle {role.name} à {member.name} ! Type : [PREFIX]")
+                return await ctx.reply(f"{user_mention} a ajouté le rôle {role.name} à {member.name} !", ephemeral = True)
+            
+            await member.add_roles(role)
+            print(f"{logsDate()} {ctx.author.name} a ajouté le rôle {role.name} à {member.name} ! Type : [SLASHCOMMAND]")
+            return await ctx.reply(f"{user_mention} a ajouté le rôle {role.name} à {member.name} !", ephemeral = True)
+        except discord.Forbidden as error:
+            print(f"{errorDate()} Le bot n'a pas les permission pour ajouter un rôle à un membre ! Erreur : {error}")
+        except discord.HTTPException as error:
+            print(f"{errorDate()} Une erreur HTTP s'est produite ! Erreur : {error}")
+        except Exception as error:
+            print(f"{errorDate()} Une erreur inattendue s'est produite !")
+        
+
+    @commands.hybrid_command(name = "remove", description = "Retire un rôle à un membre")
+    async def removerole(self, ctx : commands.Context, role : discord.Role, member : discord.Member) -> None:
+        try:
+            await ctx.defer(ephemeral = True)
+
+            is_private = ctx.guild is None and isinstance(ctx.author, discord.User)
+            if is_private:
+                return await ctx.send("Tu ne peux pas utiliser cette commande en mp !")
+            
+            has_permission = ctx.author.guild_permissions.administrator
+            user_mention = ctx.author.mention
+            if not has_permission:
+                return await ctx.reply(f"{user_mention} -> Tu n'as pas les permissions gérer les rôles !", ephemeral = True)
+
+            is_allowed_to_manage = ctx.author.top_role >= member.top_role
+            if not is_allowed_to_manage:
+                return await ctx.reply(f"{user_mention} -> Tu n'as pas les permissions pour gérer les rôles de cet utilisateur !", ephemeral = True)
+            
+            is_prefix = ctx.message.content.startswith("!")
+            if is_prefix:
+                await member.remove_roles(role)
+                print(f"{logsDate()} {ctx.author.name} a retiré le rôle {role.name} à {member.name} ! Type : [PREFIX]")
+                return await ctx.reply(f"{user_mention} a retiré le rôle {role.name} à {member.name} !", ephemeral = True)
+            
+            await member.remove_roles(role)
+            print(f"{logsDate()} {ctx.author.name} a retiré le rôle {role.name} à {member.name} ! Type : [SLASHCOMMAND]")
+            return await ctx.reply(f"{user_mention} a retiré le rôle {role.name} à {member.name} !", ephemeral = True)
+        except discord.Forbidden as error:
+            print(f"{errorDate()} Le bot n'a pas les permission pour retirer un rôle à un membre ! Erreur : {error}")
+        except discord.HTTPException as error:
+            print(f"{errorDate()} Une erreur HTTP s'est produite ! Erreur : {error}")
+        except Exception as error:
+            print(f"{errorDate()} Une erreur inattendue s'est produite !")

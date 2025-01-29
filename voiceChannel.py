@@ -26,8 +26,8 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !", ephemeral = True)
             
-            is_mutable = ctx.author.top_role > member.top_role
-            if is_mutable:
+            is_mutable = ctx.author.top_role >= member.top_role
+            if not is_mutable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas mute ce membre !", ephemeral = True)
             
             is_muted = member.voice.mute
@@ -69,8 +69,8 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !", ephemeral = True)
             
-            is_unmutable = ctx.author.top_role > member.top_role
-            if is_unmutable:
+            is_unmutable = ctx.author.top_role >= member.top_role
+            if not is_unmutable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas mute ce membre !", ephemeral = True)
             
             is_unmuted = member.voice.mute
@@ -112,7 +112,7 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !")
             
-            is_silenceable = ctx.author.top_role > member.top_role
+            is_silenceable = ctx.author.top_role >= member.top_role
             if not is_silenceable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas silence ce membre !", ephemeral = True)
             
@@ -155,7 +155,7 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !", ephemeral = True)
             
-            is_unsilenceable = ctx.author.top_role > member.top_role
+            is_unsilenceable = ctx.author.top_role >= member.top_role
             if not is_unsilenceable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas unsilence ce membre !", ephemeral = True)
             
@@ -198,7 +198,7 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !", ephemeral = True)
             
-            is_mutable = ctx.author.top_role > member.top_role
+            is_mutable = ctx.author.top_role >= member.top_role
             if not is_mutable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas global mute ce membre !", ephemeral = True)
             
@@ -237,7 +237,7 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !", ephemeral = True)
             
-            is_mutable = ctx.author.top_role > member.top_role
+            is_mutable = ctx.author.top_role >= member.top_role
             if not is_mutable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas global unmute ce membre !", ephemeral = True)
             
@@ -259,7 +259,7 @@ class VoiceChannel(commands.Cog):
     
     
     @commands.hybrid_command(name = "move", description = "Move un membre dans un salon vocal")
-    async def move(self, ctx : commands.Context, member : discord.Member,* , channel : str) -> None:
+    async def move(self, ctx : commands.Context, member : discord.Member, channel : discord.VoiceChannel) -> None:
         try:
             await ctx.defer(ephemeral = True)
 
@@ -276,7 +276,7 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !", ephemeral = True)
             
-            is_moveable = ctx.author.top_role > member.top_role
+            is_moveable = ctx.author.top_role >= member.top_role
             if not is_moveable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas move ce membre !", ephemeral = True)
             
@@ -323,7 +323,7 @@ class VoiceChannel(commands.Cog):
             if not is_connected:
                 return await ctx.reply(f"{member} n'est pas dans un salon vocal !", ephemeral = True)
             
-            is_mutable = ctx.author.top_role > member.top_role
+            is_mutable = ctx.author.top_role >= member.top_role
             if is_mutable:
                 return await ctx.reply(f"{user_mention} -> Tu ne peux pas tempmute ce membre !", ephemeral = True)
             

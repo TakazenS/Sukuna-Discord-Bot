@@ -113,7 +113,13 @@ class HelpCommand(commands.Cog):
                                     Ban un membre du serveur
 
                                     *unban* : **/unban** *<membre>*
-                                    Débannit un membre du serveur"""
+                                    Débannit un membre du serveur
+                                    
+                                    *addrole* : **/addrole** *<membre>* *<role>*
+                                    Ajoute un rôle à un membre
+                                    
+                                    *removerole* : **/removerole** *<membre>* *<role>*
+                                    Retire un rôle à un membre"""
                     )
                 
                 helpAmbed.set_author(name = ctx.author.name, icon_url = ctx.author.display_avatar.url)
@@ -143,3 +149,4 @@ class HelpCommand(commands.Cog):
             print(f"{errorDate()} Une erreur HTTP s'est produite ! Erreur : {error}")
         except Exception as error:
             print(f"{errorDate()} Une erreur inattendue s'est produite ! Erreur : {error}")
+

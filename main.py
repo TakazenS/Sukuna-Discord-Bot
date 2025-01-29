@@ -42,3 +42,4 @@ if __name__ == "__main__":
         print(f"{errorDate} Le TOKEN fourni est invalide ! Erreur : {error}")
     except Exception as error:
         print(f"{errorDate} Une erreur inattendue s'est produite ! Erreur : {error}")
+    
